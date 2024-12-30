@@ -1,7 +1,7 @@
 import { setCookie, getCookie } from './cookie';
 import { TIngredient, TOrder, TOrdersData, TUser } from './types';
 
-const URL = process.env.BURGER_API_URL;
+const URL = 'https://norma.nomoreparties.space/api';
 
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
@@ -99,7 +99,7 @@ export const getOrdersApi = () =>
     return Promise.reject(data);
   });
 
-type TNewOrderResponse = TServerResponse<{
+export type TNewOrderResponse = TServerResponse<{
   order: TOrder;
   name: string;
 }>;
@@ -122,7 +122,7 @@ export const orderBurgerApi = (data: string[]) =>
 type TOrderResponse = TServerResponse<{
   orders: TOrder[];
 }>;
-
+//
 export const getOrderByNumberApi = (number: number) =>
   fetch(`${URL}/orders/${number}`, {
     method: 'GET',
@@ -185,7 +185,7 @@ export const forgotPasswordApi = (data: { email: string }) =>
     body: JSON.stringify(data)
   })
     .then((res) => checkResponse<TServerResponse<{}>>(res))
-    .then((data) => {
+    .then(async (data) => {
       if (data?.success) return data;
       return Promise.reject(data);
     });
