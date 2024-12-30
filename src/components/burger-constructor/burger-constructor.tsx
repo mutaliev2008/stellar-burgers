@@ -1,24 +1,41 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  addFetchIngredients,
+  constructorActions
+} from '../../services/constructor/constructorSlice';
+import { useNavigate } from 'react-router-dom';
+import { userSelectors } from '../../services/user/userSlice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  const constructorItems = useSelector(
+    (state) => state.ingredients.constructorItems
+  );
+  const orderRequest = useSelector((state) => state.ingredients.orderRequest);
+  const orderModalData = useSelector(
+    (state) => state.ingredients.orderModalData
+  );
+  const authData = useSelector(userSelectors.selectedUser);
 
-  const orderRequest = false;
-
-  const orderModalData = null;
-
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+    if (authData) {
+      if (!constructorItems.bun || orderRequest) return;
+      const bunID = constructorItems.bun._id;
+      const ingredients = constructorItems.ingredients.map((item) => item._id);
+      dispatch(addFetchIngredients([bunID, ...ingredients]));
+      dispatch(constructorActions.setOrderRequest(true));
+    } else {
+      navigate('/login');
+    }
   };
-  const closeOrderModal = () => {};
+  const closeOrderModal = () => {
+    dispatch(constructorActions.setOrderRequest(false));
+    dispatch(constructorActions.setNullOrderModalData());
+  };
 
   const price = useMemo(
     () =>
@@ -29,8 +46,6 @@ export const BurgerConstructor: FC = () => {
       ),
     [constructorItems]
   );
-
-  return null;
 
   return (
     <BurgerConstructorUI
