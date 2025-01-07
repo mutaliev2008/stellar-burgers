@@ -14,7 +14,7 @@ export const Login: FC = () => {
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     const res = await dispatch(loginUser({ email, password }));
-    if (res.meta.requestStatus === 'fulfilled') navigate('/profile');
+    if (res.meta.requestStatus === 'fulfilled') navigate('/');
   };
 
   return (

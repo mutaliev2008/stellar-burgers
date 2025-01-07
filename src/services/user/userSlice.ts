@@ -12,9 +12,11 @@ import {
 } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
-import { setCookie } from '../../utils/cookie';
+import { getCookie, setCookie } from '../../utils/cookie';
 
 export interface UserState {
+  isAuthChecked: boolean;
+  isAuthenticated: boolean;
   user: TUser | null;
   error: string | null;
   isLoading: boolean;
@@ -62,30 +64,41 @@ const initialState: UserState = {
   user: null,
   error: null,
   isLoading: false,
-  token: null
+  token: null,
+  isAuthChecked: false,
+  isAuthenticated: false
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    authChecked: (state) => {
+      state.isAuthChecked = true;
+    }
+  },
   selectors: {
     selectedUserIsLoading: (state) => state.isLoading,
     selectedUser: (state) => state.user,
-    selectedUserError: (state) => state.error
+    selectIsAuthenticated: (state) => state.isAuthenticated,
+    selectedUserError: (state) => state.error,
+    selectIsAuthChecked: (state) => state.isAuthChecked
   },
 
   extraReducers(builder) {
     builder
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
+        state.isAuthenticated = false;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.user;
+        state.isAuthenticated = false;
       })
       .addCase(registerUser.rejected, (state) => {
         state.isLoading = false;
+        state.isAuthenticated = false;
         state.error = 'Произошла ошибка';
       })
       .addCase(loginUser.pending, (state) => {
@@ -93,10 +106,13 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isAuthChecked = true;
+        state.isAuthenticated = true;
         state.user = action.payload.user;
       })
       .addCase(loginUser.rejected, (state) => {
         state.isLoading = false;
+        state.isAuthChecked = true;
         state.error = 'Произошла ошибка';
       })
 
@@ -105,21 +121,26 @@ export const userSlice = createSlice({
       })
       .addCase(getUser.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isAuthChecked = true;
         state.user = action.payload.user;
       })
       .addCase(getUser.rejected, (state, action) => {
         state.isLoading = false;
+        state.isAuthChecked = true;
         state.error = 'Произошла ошибка';
       })
       .addCase(logout.pending, (state) => {
         state.isLoading = true;
+        state.isAuthenticated = true;
       })
       .addCase(logout.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = null;
+        state.isAuthenticated = false;
       })
       .addCase(logout.rejected, (state, action) => {
         state.isLoading = false;
+        state.isAuthenticated = false;
         state.error = 'Произошла ошибка';
       })
       .addCase(forgotPassword.pending, (state) => {
@@ -135,19 +156,35 @@ export const userSlice = createSlice({
       })
       .addCase(updateUser.pending, (state) => {
         state.isLoading = true;
+        state.isAuthenticated = true;
       })
       .addCase(updateUser.fulfilled, (state, { payload }) => {
         state.isLoading = false;
         state.error = null;
         state.user = payload.user;
+        state.isAuthenticated = true;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.isLoading = false;
+        state.isAuthenticated = false;
         state.error = 'Произошла ошибка';
       });
   }
 });
 
+export const checkUserAuth = createAsyncThunk(
+  'user/checkUser',
+  (_, { dispatch }) => {
+    if (getCookie('accessToken')) {
+      dispatch(getUser()).finally(() => {
+        dispatch(authChecked());
+      });
+    } else {
+      dispatch(authChecked());
+    }
+  }
+);
+export const { authChecked } = userSlice.actions;
 export const userActions = userSlice.actions;
 export const userSelectors = userSlice.selectors;
 export const userReducer = userSlice.reducer;

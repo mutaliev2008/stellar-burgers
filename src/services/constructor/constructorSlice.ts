@@ -55,11 +55,14 @@ const constructorSlice = createSlice({
   reducers: {
     setAddIngredient: (state, action) => {
       if (action.payload.type === 'bun') {
-        state.constructorItems.bun = action.payload;
+        state.constructorItems.bun = {
+          ...action.payload.ingredient,
+          id: action.payload.id
+        };
       } else {
         state.constructorItems.ingredients = [
           ...state.constructorItems.ingredients,
-          { ...action.payload, id: nanoid() }
+          { ...action.payload.ingredient, id: action.payload.id }
         ];
       }
     },
@@ -109,6 +112,10 @@ const constructorSlice = createSlice({
         (state, action: PayloadAction<TNewOrderResponse>) => {
           state.orderRequest = false;
           state.orderModalData = action.payload.order;
+          state.constructorItems = {
+            bun: null,
+            ingredients: []
+          };
         }
       );
   }

@@ -50,11 +50,6 @@ export const getOrderState = (state: RootState): OrderState => state.order;
 export const selectOrderData = (state: RootState) =>
   state.order.getOrderNumberResponse;
 
-export const selectOrderDataMemoized = createSelector(
-  [selectOrderData],
-  (orderData) => orderData
-);
-
 export const orderReduser = orderSlice.reducer;
 export const {} = orderSlice.actions;
 export default orderSlice.reducer;
