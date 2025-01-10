@@ -1,0 +1,1 @@
+export { OrderInfoWithTitleUI } from './orderInfoWithModal';

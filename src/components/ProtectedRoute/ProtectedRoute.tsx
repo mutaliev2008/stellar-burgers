@@ -14,6 +14,9 @@ export const ProtectedRoute = ({
   const location = useLocation();
   const isAuthorized = useSelector(userSelectors.selectIsAuthenticated);
   const from = location.state?.from || '/';
+
+  console.log(isAuthorized);
+
   if (!forAuthorized && isAuthorized) {
     return <Navigate to={from} />;
   }

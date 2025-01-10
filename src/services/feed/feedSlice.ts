@@ -29,6 +29,7 @@ export const getIngredients = createAsyncThunk(
   'ingredient/get',
   getIngredientsApi
 );
+
 export const getFeed = createAsyncThunk('feed/get', getFeedsApi);
 
 export const feedSlice = createSlice({
@@ -53,19 +54,19 @@ export const feedSlice = createSlice({
       .addCase(getFeed.rejected, (state) => {
         state.isLoading = false;
         state.error = 'Произошла ошибка';
+      })
+      .addCase(getIngredients.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getIngredients.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message as string;
+      })
+      .addCase(getIngredients.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.ingredients = action.payload;
       });
-    builder.addCase(getIngredients.pending, (state) => {
-      state.isLoading = true;
-      state.error = null;
-    });
-    builder.addCase(getIngredients.rejected, (state, action) => {
-      state.isLoading = false;
-      state.error = action.error.message as string;
-    });
-    builder.addCase(getIngredients.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.ingredients = action.payload;
-    });
   }
 });
 

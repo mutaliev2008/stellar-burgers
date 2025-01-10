@@ -58,7 +58,11 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-export const getUser = createAsyncThunk('user/get', getUserApi);
+export const getUser = createAsyncThunk('user/get', async () => {
+  const res = await getUserApi();
+  console.log(res);
+  return res;
+});
 
 const initialState: UserState = {
   user: null,
@@ -121,12 +125,12 @@ export const userSlice = createSlice({
       })
       .addCase(getUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isAuthChecked = true;
+        state.isAuthenticated = true;
         state.user = action.payload.user;
       })
       .addCase(getUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.isAuthChecked = true;
+        state.isAuthenticated = false;
         state.error = 'Произошла ошибка';
       })
       .addCase(logout.pending, (state) => {

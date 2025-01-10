@@ -19,10 +19,6 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   const ingredientsState = useSelector(selectedFeedState);
   const ingredients: TIngredient[] = ingredientsState.ingredients;
 
-  useEffect(() => {
-    dispatch(getIngredients());
-  }, [dispatch]);
-
   const orderInfo = useMemo(() => {
     if (!ingredients || !ingredients.length) return null;
 

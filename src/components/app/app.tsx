@@ -17,6 +17,8 @@ import { useDispatch } from '../../services/store';
 import styles from './app.module.css';
 import { getIngredients } from '../../services/feed/feedSlice';
 import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
+import { getUser } from '../../services/user/userSlice';
+import { OrderDetails } from '../order-info-whit-title';
 
 const App = () => {
   const navigate = useNavigate();
@@ -32,6 +34,9 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getIngredients());
+    if (localStorage.getItem('refreshToken')) {
+      dispatch(getUser());
+    }
   }, [dispatch]);
 
   return (
@@ -91,18 +96,33 @@ const App = () => {
         />
         {}
         <Route path='*' element={<NotFound404 />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route
+          path='/feed/:number'
+          element={
+            <OrderDetails title={`#${location.pathname.match(/\d+/)}`}>
+              <OrderInfo />
+            </OrderDetails>
+          }
+        />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <OrderDetails title={`Детали ингредиента`}>
+              <IngredientDetails />
+            </OrderDetails>
+          }
+        />
         <Route
           path='/profile/orders/:number'
           element={
             <ProtectedRoute forAuthorized>
-              <OrderInfo />
+              <OrderDetails title={`#${location.pathname.match(/\d+/)}`}>
+                <OrderInfo />
+              </OrderDetails>
             </ProtectedRoute>
           }
         />
       </Routes>
-      {}
       {background && (
         <Routes>
           <Route
