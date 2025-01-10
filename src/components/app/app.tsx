@@ -14,7 +14,6 @@ import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import '../../index.css';
 import { useDispatch } from '../../services/store';
-import { checkUserAuth } from '../../services/user/userSlice';
 import styles from './app.module.css';
 import { getIngredients } from '../../services/feed/feedSlice';
 import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
@@ -109,7 +108,10 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title={''} onClose={closeModal}>
+              <Modal
+                title={`#${location.pathname.match(/\d+/)}`}
+                onClose={closeModal}
+              >
                 <OrderInfo />
               </Modal>
             }
@@ -126,7 +128,10 @@ const App = () => {
             path='/profile/orders/:number'
             element={
               <ProtectedRoute forAuthorized>
-                <Modal title={''} onClose={closeModal}>
+                <Modal
+                  title={`#${location.pathname.match(/\d+/)}`}
+                  onClose={closeModal}
+                >
                   <OrderInfo />
                 </Modal>
               </ProtectedRoute>

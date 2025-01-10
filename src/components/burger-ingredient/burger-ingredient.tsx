@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC, memo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { nanoid } from '@reduxjs/toolkit';
 import { BurgerIngredientUI } from '@ui';
@@ -10,11 +10,8 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
   ({ ingredient, count }) => {
     const location = useLocation();
     const dispatch = useDispatch();
-
     const handleAdd = () => {
-      dispatch(
-        constructorActions.setAddIngredient({ ingredient, id: nanoid() })
-      );
+      dispatch(constructorActions.setAddIngredient(ingredient));
     };
 
     return (

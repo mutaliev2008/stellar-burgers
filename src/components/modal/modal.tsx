@@ -7,12 +7,10 @@ import { useLocation, useParams } from 'react-router-dom';
 const modalRoot = document.getElementById('modals');
 
 export const Modal: FC<TModalProps> = memo(({ title, onClose, children }) => {
-  const { number } = useParams<{ number: string }>();
-
-  const [titleStyle, setTitleStyle] = useState('text_type_digits-default');
+  const [titleStyle, setTitleStyle] = useState('text_type_main-large');
   useEffect(() => {
     if (/feed|profile/i.test(location.pathname)) {
-      setTitleStyle('text_type_main-large');
+      setTitleStyle('text_type_digits-default');
     }
   });
   useEffect(() => {
@@ -27,7 +25,7 @@ export const Modal: FC<TModalProps> = memo(({ title, onClose, children }) => {
   }, [onClose]);
 
   return ReactDOM.createPortal(
-    <ModalUI title={number} onClose={onClose} titleStyle={titleStyle}>
+    <ModalUI title={title} onClose={onClose} titleStyle={titleStyle}>
       {children}
     </ModalUI>,
     modalRoot as HTMLDivElement
