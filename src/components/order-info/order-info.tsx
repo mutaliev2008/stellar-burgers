@@ -15,7 +15,6 @@ export const OrderInfo: FC = () => {
   const dispatch = useDispatch();
   const orderData = useSelector(selectOrderData);
   const ingredients: TIngredient[] = useSelector(selectedFeedState).ingredients;
-  console.log(orderData?.status);
 
   useEffect(() => {
     if (number) {

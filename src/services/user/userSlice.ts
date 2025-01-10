@@ -60,7 +60,6 @@ export const registerUser = createAsyncThunk(
 
 export const getUser = createAsyncThunk('user/get', async () => {
   const res = await getUserApi();
-  console.log(res);
   return res;
 });
 
