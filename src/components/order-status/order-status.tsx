@@ -9,17 +9,18 @@ const statusText: { [key: string]: string } = {
 };
 
 export const OrderStatus: FC<OrderStatusProps> = ({ status }) => {
-  let textStyle = '';
-  switch (status) {
-    case 'pending':
-      textStyle = '#E52B1A';
-      break;
-    case 'done':
-      textStyle = '#00CCCC';
-      break;
-    default:
-      textStyle = '#F2F2F3';
-  }
+  const statusStyles: { [key: string]: string } = {
+    pending: '#E52B1A',
+    done: '#00CCCC',
+    default: '#F2F2F3'
+  };
 
-  return <OrderStatusUI textStyle={textStyle} text={statusText[textStyle]} />;
+  const textStyle = status ? statusStyles[status] : statusStyles.default;
+
+  return (
+    <OrderStatusUI
+      textStyle={textStyle}
+      text={status ? statusText[status] : 'Неизвестный статус'}
+    />
+  );
 };

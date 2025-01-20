@@ -1,23 +1,27 @@
-import { FC, useMemo } from 'react';
+import React, { FC, useMemo, useEffect, useState } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
+import { useParams } from 'react-router-dom';
+import {
+  getOrderNumber,
+  selectOrderData
+} from '../../services/order/orderSlice';
+import { selectedFeedState } from '../../services/feed/feedSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const { number } = useParams<{ number: string }>();
+  const dispatch = useDispatch();
+  const orderData = useSelector(selectOrderData);
+  const ingredients: TIngredient[] = useSelector(selectedFeedState).ingredients;
 
-  const ingredients: TIngredient[] = [];
+  useEffect(() => {
+    if (number) {
+      dispatch(getOrderNumber(Number(number)));
+    }
+  }, [dispatch, number]);
 
-  /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
@@ -26,19 +30,15 @@ export const OrderInfo: FC = () => {
     type TIngredientsWithCount = {
       [key: string]: TIngredient & { count: number };
     };
-
     const ingredientsInfo = orderData.ingredients.reduce(
       (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1
-            };
-          }
-        } else {
-          acc[item].count++;
+        const ingredient = ingredients.find((ing) => ing._id === item);
+        if (ingredient) {
+          const count = ingredient.type === 'bun' ? 2 : 1;
+          acc[item] = {
+            ...ingredient,
+            count
+          };
         }
 
         return acc;
